@@ -1,0 +1,19 @@
+#config files
+.vscode/*
+.vscode
+
+#compiled files
+*.exe
+
+#report and task documents
+*.doc
+*.docx
+*.txt
+
+#other individual tasks
+cities.data
+figures.data
+taxes.data
+
+#others
+*.tmp
