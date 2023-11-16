@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>  
+#include <vector>
 
 template <typename T>
 struct Edge {
@@ -35,10 +35,10 @@ class Node {
     }
 
     void print() {    
-      std::cout << "  " << value << std::endl;
+      std::cout << "  ⊛ " << value << std::endl;
         for (auto edge : edges) {
             if (edge.node != nullptr) {
-                std::cout << "   ⤷――― " << edge.weight << " ――――> " << edge.node->value << std::endl;
+                std::cout << "   ⤷――― " << edge.weight << " ――――> ⊛ " << edge.node->value << std::endl;
             }
         }
     }
@@ -63,10 +63,11 @@ public:
     for(int i = 0; i < nodes.size(); i++) {
       if (nodes[i].value == vertex1) {
         for (int j = 0; j < nodes.size(); j++)
-        {
+        {         
           if (nodes[j].value == vertex2) {
             nodes[i].addNext(&nodes[j], weight); // vertex1 -> vertex2
-            nodes[j].addNext(&nodes[i], weight); // vertex2 -> vertex1
+            //! UNCOMMENT FOR UNDIRECTED GRAPH:
+            // nodes[j].addNext(&nodes[i], weight); // vertex2 -> vertex1 
             return;
           }
         }
@@ -84,46 +85,55 @@ public:
 
 
 int main() {
-  Graph<std::string> graph;
-  graph.addNode("A");
-  graph.addNode("B");
-  graph.addNode("C");
-  graph.addNode("D");
-  graph.addNode("E");
-  graph.addNode("F");
-  graph.addNode("G");
-  graph.addEdge("A", "B", 1);
-  graph.addEdge("A", "D", 5);
-  graph.addEdge("D", "C", 5);
-  graph.addEdge("D", "B", 8);
+  // Declare Graph
+  Graph<std::string> graph;  
+
+  // Read Data
+  std::ifstream file("movies.data");
+  //! There is � � � in the file, so I changed encoding to utf8
+
+  if (!file.is_open() || !file) {
+    std::cerr << "Error opening file" << std::endl;
+    return 1;
+  }
+
+  std::string line;
+
+  bool nodesEnds = false;
+  while (getline(file, line)) {
+    // Change state when nodes end
+    if (line == "---------------") {
+      nodesEnds = true;
+      continue;
+    }
+    // Skip empty lines
+    if (line.empty()) continue;
+    try {
+      if (!nodesEnds) {
+        // Add line as a node to graph
+        graph.addNode(line);
+      } else {
+        // Extract vertex1 from line
+        std::string vertex1 = line.substr(0, line.find(","));
+        line.erase(0, line.find(",") + 1);
+        // Extract vertex2 from line
+        std::string vertex2 = line.substr(0, line.find(","));
+        line.erase(0, line.find(",") + 1);
+        // Extract weight of an edge from line
+        int weight = std::stoi(line);
+
+        // Add edge between vertex1 and vertex2 with weight
+        graph.addEdge(vertex1, vertex2, weight);
+      }
+    } catch (const std::invalid_argument& e) {
+      std::cerr << "Error reading line number." << std::endl;
+    }
+  }
+
+  file.close();
+
+  // Process Data
   graph.print();
-
-  // // Initialize Data Structure
-  // Graph<std::string> graph;  
-
-  // // Read Data
-  // std::ifstream file("movies.data");
-
-  // if (!file.is_open()) {
-  //   std::cerr << "Error opening file" << std::endl;
-  //   return 1;
-  // }
-
-  // std::string line;
-
-  // while (getline(file, line)) {
-  //   try {
-  //     // Add line to data structure
-  //     graph.insertNode(line);
-  //   } catch (const std::invalid_argument& e) {
-  //     std::cerr << "Error reading line number." << std::endl;
-  //   }
-  // }
-
-  // file.close();
-
-  // // Process Data
-  // graph.printGraph();
 
   return 0;
 }
