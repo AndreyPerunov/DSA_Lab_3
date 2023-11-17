@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include <chrono>  
 
 const int INF = INT_MAX;
 
@@ -273,25 +274,38 @@ int main() {
   graph.print(graph.adjacencyMatrix());
 
   // Task 1: How many connections all graph nodes has?
+  std::cout << std::endl << "How many connections all graph nodes has?" << std::endl;
+  auto start1 = std::chrono::high_resolution_clock::now();
   for (auto node : graph.nodes) {
     std::cout << "Node: " << node.value << " | Degree: " << graph.nodeDegree(node.value) << std::endl;
   }
-  std::cout << std::endl;
+  auto end1 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> duration1 = end1 - start1;
+  std::cout << "  Time: " << duration1.count()*1000 << "ms" << std::endl << std::endl;
 
   // Task 2: Is there a cycle in a Graph?
+  std::cout << std::endl << "Is there a cycle in a Graph?" << std::endl;
+  auto start2 = std::chrono::high_resolution_clock::now();
   if (graph.isThereCycle()) {
-    std::cout << "There is a cycle in the graph." << std::endl << std::endl;
+    std::cout << "There is a cycle in the graph." << std::endl;
   } else {
-    std::cout << "There is no cycle in the graph." << std::endl << std::endl;
+    std::cout << "There is no cycle in the graph." << std::endl;
   }
+  auto end2 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> duration2 = end2 - start2;
+  std::cout << "  Time: " << duration2.count()*1000 << "ms" << std::endl << std::endl;
 
   // Task 3: Dijkstra's Algorithm
+  std::cout << std::endl << "Dijkstra's Algorithm" << std::endl;
+  auto start3 = std::chrono::high_resolution_clock::now();
   std::vector<int> indexPath = graph.findPath(graph.nodes[0].value, graph.nodes[graph.nodes.size() - 1].value);
   std::cout << graph.nodes[indexPath[0]].value;
   for (int i = 1; i < indexPath.size(); i++) {
     std::cout << " -> " << graph.nodes[indexPath[i]].value;
   }
-  std::cout << std::endl;
+  auto end3 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> duration3 = end3 - start3;
+  std::cout << "  Time: " << duration3.count()*1000 << "ms" << std::endl << std::endl;
 
   return 0;
 }
