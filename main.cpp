@@ -2,6 +2,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
+#include <stack>
+
+const int INF = INT_MAX;
 
 template <typename T>
 struct Edge {
@@ -35,10 +39,12 @@ class Node {
     }
 
     void print() {    
-      std::cout << "  ⊛ " << value << std::endl;
+      std::cout << "  * " << value << std::endl;
+      // std::cout << "  ⊛ " << value << std::endl;
         for (auto edge : edges) {
             if (edge.node != nullptr) {
-                std::cout << "   ⤷――― " << edge.weight << " ――――> ⊛ " << edge.node->value << std::endl;
+                std::cout << "   --- " << edge.weight << " ---> * " << edge.node->value << std::endl;
+                // std::cout << "   ⤷――― " << edge.weight << " ――――> ⊛ " << edge.node->value << std::endl;
             }
         }
     }
@@ -120,7 +126,7 @@ public:
     visited[v] = 2;
   }
 
-  bool isThereCycle(){
+  bool isThereCycle() {
     std::vector<int> visited(nodes.size(), 0);
     bool hasCycle = false;
 
@@ -144,6 +150,54 @@ public:
     std::cout << std::endl;
   }
 
+  std::vector<int> convertToPath(std::vector<int> prevNodes, int start, int end) {
+    std::vector<int> path;
+    std::stack<int> tmpPath;
+    int current = end;
+    while (current != -1)
+    {
+      tmpPath.push(current);
+      current = prevNodes[current];
+    }
+    while (!tmpPath.empty())
+    {
+      path.push_back(tmpPath.top());
+      tmpPath.pop();
+    }
+    return path;    
+  }
+
+  std::vector<int> findPath(T start, T end) {
+    int startIndex = findIndex(start);
+    int endIndex = findIndex(end);
+    std::vector<bool> visited(nodes.size(), false);
+    std::vector<int> nodesWeights(nodes.size(), INF);
+    std::vector<int> prevNodes(nodes.size(), -1);
+    nodesWeights[startIndex] = 0;
+    std::map<int, int> minDistance; // distance, vertex
+    minDistance[0] = startIndex;
+    while (!minDistance.empty()) {
+      auto [weight, index] = *minDistance.begin();
+      minDistance.erase(minDistance.begin());
+      if (visited[index]) continue;
+      visited[index] = true;
+
+      for (int i = 0; i < nodes[index].edges.size()-1; i++) {
+        int toIndex = findIndex(nodes[index].edges[i].node->value);
+        int edgeWeight = nodes[index].edges[i].weight;
+        if (!visited[toIndex]) {
+          if (weight + edgeWeight < nodesWeights[toIndex]) {
+            nodesWeights[toIndex] = weight + edgeWeight;
+            prevNodes[toIndex] = index;
+            minDistance[nodesWeights[toIndex]] = toIndex;
+          }
+        }
+        
+      }       
+    }
+    return convertToPath(prevNodes, startIndex, endIndex);
+  }
+
   void print() {
     std::cout << "Graph: " << std::endl;
     for (auto node : nodes) {
@@ -158,6 +212,7 @@ public:
         return (node.edges.size() - 1);
       }
     }
+    return -1;
   }
 };
 
@@ -209,6 +264,7 @@ int main() {
   }
 
   file.close();
+  std::cout << std::endl;
 
   // Print Graph
   graph.print();
@@ -228,5 +284,14 @@ int main() {
   } else {
     std::cout << "There is no cycle in the graph." << std::endl << std::endl;
   }
+
+  // Task 3: Dijkstra's Algorithm
+  std::vector<int> indexPath = graph.findPath(graph.nodes[0].value, graph.nodes[graph.nodes.size() - 1].value);
+  std::cout << graph.nodes[indexPath[0]].value;
+  for (int i = 1; i < indexPath.size(); i++) {
+    std::cout << " -> " << graph.nodes[indexPath[i]].value;
+  }
+  std::cout << std::endl;
+
   return 0;
 }
