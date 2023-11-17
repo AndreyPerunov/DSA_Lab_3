@@ -151,6 +151,14 @@ public:
     }
     std::cout << std::endl;
   }
+
+  int nodeDegree (T value) {
+    for (auto node : nodes) {
+      if (node.value == value) {
+        return (node.edges.size() - 1);
+      }
+    }
+  }
 };
 
 
@@ -208,12 +216,17 @@ int main() {
   // Adjacency Matrix
   graph.print(graph.adjacencyMatrix());
 
-  // Check if there is a cycle
+  // Task 1: How many connections all graph nodes has?
+  for (auto node : graph.nodes) {
+    std::cout << "Node: " << node.value << " | Degree: " << graph.nodeDegree(node.value) << std::endl;
+  }
+  std::cout << std::endl;
+
+  // Task 2: Is there a cycle in a Graph?
   if (graph.isThereCycle()) {
     std::cout << "There is a cycle in the graph." << std::endl << std::endl;
   } else {
     std::cout << "There is no cycle in the graph." << std::endl << std::endl;
   }
-
   return 0;
 }
