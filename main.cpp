@@ -94,6 +94,45 @@ public:
     return matrix;
   }
 
+  int findIndex(T value) {
+    for (int i = 0; i < nodes.size(); i++) {
+      if (nodes[i].value == value) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  void dfs(std::vector<Node<T>>& adjacencyList, int v, std::vector<int> &visited, bool &hasCycle) {
+    visited[v] = 1;
+    
+    for (auto edge : adjacencyList[v].edges) {
+      if (edge.node == nullptr) continue;
+      int to = Graph::findIndex(edge.node->value);
+      
+      if(visited[to] == 0) {
+        dfs(adjacencyList, to, visited, hasCycle);
+      } else if (visited[to] == 1) {
+        hasCycle = true;
+      }
+    }
+
+    visited[v] = 2;
+  }
+
+  bool isThereCycle(){
+    std::vector<int> visited(nodes.size(), 0);
+    bool hasCycle = false;
+
+    for (int i = 0; i < nodes.size(); i++) {
+      if (!visited[i]) {
+        dfs(nodes, i, visited, hasCycle);
+      }
+    }
+
+    return hasCycle;
+  }
+
   void print(std::vector<std::vector<int>> matrix) {
     std::cout << "Adjacency Matrix: " << std::endl;
     for (std::vector<int> row : matrix) {
@@ -102,6 +141,7 @@ public:
       }
       std::cout << std::endl;
     }
+    std::cout << std::endl;
   }
 
   void print() {
@@ -109,6 +149,7 @@ public:
     for (auto node : nodes) {
       node.print();
     }
+    std::cout << std::endl;
   }
 };
 
@@ -167,7 +208,12 @@ int main() {
   // Adjacency Matrix
   graph.print(graph.adjacencyMatrix());
 
-
+  // Check if there is a cycle
+  if (graph.isThereCycle()) {
+    std::cout << "There is a cycle in the graph." << std::endl << std::endl;
+  } else {
+    std::cout << "There is no cycle in the graph." << std::endl << std::endl;
+  }
 
   return 0;
 }
