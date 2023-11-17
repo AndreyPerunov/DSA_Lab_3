@@ -75,6 +75,35 @@ public:
     }
   }
 
+  std::vector<std::vector<int>> adjacencyMatrix() {
+    std::vector<std::vector<int>> matrix;
+    for (int i = 0; i < nodes.size(); i++) {
+      std::vector<int> row;
+      for (int j = 0; j < nodes.size(); j++) {
+        int weight = 0;
+        for (auto edge : nodes[i].edges) {
+          if (edge.node != nullptr && edge.node->value == nodes[j].value) {
+            weight = edge.weight;
+            break;
+          }
+        }
+        row.push_back(weight);
+      }
+      matrix.push_back(row);
+    }
+    return matrix;
+  }
+
+  void print(std::vector<std::vector<int>> matrix) {
+    std::cout << "Adjacency Matrix: " << std::endl;
+    for (std::vector<int> row : matrix) {
+      for (int col : row) {
+        std::cout << col << " ";
+      }
+      std::cout << std::endl;
+    }
+  }
+
   void print() {
     std::cout << "Graph: " << std::endl;
     for (auto node : nodes) {
@@ -132,8 +161,13 @@ int main() {
 
   file.close();
 
-  // Process Data
+  // Print Graph
   graph.print();
+
+  // Adjacency Matrix
+  graph.print(graph.adjacencyMatrix());
+
+
 
   return 0;
 }
